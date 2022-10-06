@@ -1,6 +1,11 @@
 export interface Transaction {
-  id: number;
-  userId: string;
+  id: string;
   amount: number;
   txnType: "credit" | "debit";
+  purpose: "deposit" | "withdrawal" | "transfer";
+  accountId: string;
+  balanceBefore: number;
+  balanceAfter: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

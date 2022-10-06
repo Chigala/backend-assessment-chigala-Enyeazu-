@@ -11,6 +11,7 @@ const dbConnection = {
     user: DB_USER,
     password: DB_PASSWORD,
     database: DB_DATABASE,
+    ssl: true,
   },
   pool: {
     min: 2,

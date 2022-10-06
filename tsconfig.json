@@ -35,6 +35,6 @@
       "@utils/*": ["utils/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env"],
+  "include": ["src/**/*.ts", "src/**/*.json", ".env", "src/databases/migrations/20221006074940_referencing.ts"],
   "exclude": ["node_modules", "src/http", "src/logs", "src/tests"]
 }
