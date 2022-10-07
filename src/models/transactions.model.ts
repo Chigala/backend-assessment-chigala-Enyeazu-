@@ -1,17 +1,18 @@
 import { Model, ModelObject } from "objection";
 import { Transaction } from "@/interfaces/transaction.interface";
 import { Accounts } from "./accounts.model";
+import { Purpose, TxnType } from "@/dtos/transactions.dto";
 
 export class Transactions extends Model implements Transaction {
   id!: string;
   amount!: number;
-  txnType!: "credit" | "debit";
-  purpose!: "deposit" | "withdrawal" | "transfer";
+  txnType!: TxnType;
+  purpose!: Purpose;
   accountId: string;
   balanceBefore!: number;
   balanceAfter!: number;
-  createdAt!: Date;
-  updatedAt!: Date;
+  to: string;
+  from: string;
 
   static tableName = "transactions"; // database table name
   static idColumn = "id"; // id column name

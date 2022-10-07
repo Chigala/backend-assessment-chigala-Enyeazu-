@@ -1,11 +1,17 @@
+import { Purpose, TxnType } from "@/dtos/transactions.dto";
+
 export interface Transaction {
   id: string;
   amount: number;
-  txnType: "credit" | "debit";
-  purpose: "deposit" | "withdrawal" | "transfer";
+  txnType: TxnType;
+  purpose: Purpose;
   accountId: string;
   balanceBefore: number;
   balanceAfter: number;
-  createdAt: Date;
-  updatedAt: Date;
+  to: string;
+  from: string;
+}
+export interface sendMoneyReturnProps {
+  creditTxn: Transaction;
+  debitTxn: Transaction;
 }
