@@ -3,4 +3,5 @@ export interface Account {
   name: string;
   balance: number;
   txnPassword: string;
+  user_id: String;
 }

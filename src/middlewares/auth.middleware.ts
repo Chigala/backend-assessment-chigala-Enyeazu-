@@ -12,11 +12,12 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
 
     if (Authorization) {
       const secretKey: string = SECRET_KEY;
-      const verificationResponse = (await verify(Authorization, secretKey)) as DataStoredInToken;
+      const verificationResponse = verify(Authorization, secretKey) as DataStoredInToken;
       const userId = verificationResponse.id;
       const findUser: User = await Users.query().findById(userId);
 
       if (findUser) {
+        req.user;
         req.user = findUser;
         next();
       } else {

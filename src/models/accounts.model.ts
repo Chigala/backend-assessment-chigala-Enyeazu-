@@ -7,6 +7,7 @@ export class Accounts extends Model implements Account {
   name!: string;
   balance!: number;
   txnPassword: string;
+  user_id!: string;
 
   static tableName = "accounts"; // database table name
   static idColumn = "id"; // id column name

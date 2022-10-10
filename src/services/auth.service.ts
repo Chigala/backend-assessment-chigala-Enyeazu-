@@ -7,8 +7,13 @@ import { DataStoredInToken, TokenData } from "@interfaces/auth.interface";
 import { User } from "@interfaces/users.interface";
 import { Users } from "@models/users.model";
 import { isEmpty } from "@utils/util";
+import { v4 as uuidv4 } from "uuid";
+
+import AccountService from "./accounts.service";
 
 class AuthService {
+  public accountService = new AccountService();
+
   public async signup(userData: CreateUserDto): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
@@ -16,9 +21,8 @@ class AuthService {
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
 
     const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = await Users.query()
-      .insert({ ...userData, password: hashedPassword })
-      .into("users");
+    const createUserData: User = await Users.query().insert({ email: userData.email, id: uuidv4(), password: hashedPassword });
+    await this.accountService.creatAccount(userData.name, createUserData.id, hashedPassword);
 
     return createUserData;
   }

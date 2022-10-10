@@ -1,7 +1,7 @@
 import request from "supertest";
 import App from "@/app";
 import { CreateUserDto } from "@dtos/users.dto";
-import AuthRoute from "@routes/auth.route";
+import AuthRoute from "@/routes/auth.route";
 
 afterAll(async () => {
   await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
@@ -13,17 +13,29 @@ describe("Testing Auth", () => {
       const userData: CreateUserDto = {
         email: "test@email.com",
         password: "q1w2e3r4",
+        name: "chigala",
       };
 
       const authRoute = new AuthRoute();
       const app = new App([authRoute]);
       return request(app.getServer()).post("/signup").send(userData).expect(201);
     });
+
+    it("check if the user already exists ", () => {
+      const userData = {
+        email: "test@gmail.com",
+        password: "chigala",
+        name: "chigala",
+      };
+      const authRoute = new AuthRoute();
+      const app = new App([authRoute]);
+      return request(app.getServer()).post("/signup").send(userData).expect(409);
+    });
   });
 
   describe("[POST] /login", () => {
     it("response should have the Set-Cookie header with the Authorization token", async () => {
-      const userData: CreateUserDto = {
+      const userData = {
         email: "test@email.com",
         password: "q1w2e3r4",
       };

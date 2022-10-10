@@ -12,7 +12,7 @@ class AuthController {
       const userData: CreateUserDto = req.body;
       const signUpUserData: User = await this.authService.signup(userData);
 
-      res.status(201).json({ data: signUpUserData, message: "signup" });
+      res.status(201).json({ data: signUpUserData, message: "signup and account created" });
     } catch (error) {
       next(error);
     }

@@ -5,7 +5,7 @@ export interface Transaction {
   amount: number;
   txnType: TxnType;
   purpose: Purpose;
-  accountId: string;
+  account_id: string;
   balanceBefore: number;
   balanceAfter: number;
   to: string;

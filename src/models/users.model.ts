@@ -1,7 +1,7 @@
 import { Model, ModelObject } from "objection";
 import { User } from "@interfaces/users.interface";
 export class Users extends Model implements User {
-  id!: number;
+  id!: string;
   email!: string;
   password!: string;
 

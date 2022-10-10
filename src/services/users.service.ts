@@ -4,15 +4,19 @@ import { HttpException } from "@exceptions/HttpException";
 import { User } from "@interfaces/users.interface";
 import { Users } from "@models/users.model";
 import { isEmpty } from "@utils/util";
+import AccountService from "./accounts.service";
 
 class UserService {
+  public accountService = new AccountService();
+
   public async findAllUser(): Promise<User[]> {
     const users: User[] = await Users.query().select().from("users");
     return users;
   }
 
-  public async findUserById(userId: number): Promise<User> {
+  public async findUserById(userId: string): Promise<User> {
     const findUser: User = await Users.query().findById(userId);
+    console.log(userId);
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 
     return findUser;
@@ -32,7 +36,7 @@ class UserService {
     return createUserData;
   }
 
-  public async updateUser(userId: number, userData: User): Promise<User> {
+  public async updateUser(userId: string, userData: User): Promise<User> {
     if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
 
     const findUser: User[] = await Users.query().select().from("users").where("id", "=", userId);
@@ -48,7 +52,7 @@ class UserService {
     return updateUserData;
   }
 
-  public async deleteUser(userId: number): Promise<User> {
+  public async deleteUser(userId: string): Promise<User> {
     const findUser: User = await Users.query().select().from("users").where("id", "=", userId).first();
     if (!findUser) throw new HttpException(409, "User doesn't exist");
 

@@ -1,11 +1,14 @@
+import { RequestWithUser } from "./../interfaces/auth.interface";
 import { sendMoneyReturnProps } from "./../interfaces/transaction.interface";
 import { NextFunction, Request, Response } from "express";
 import { UserTransactionsDto } from "@/dtos/transactions.dto";
 import { Transaction } from "@/interfaces/transaction.interface";
 import TransactionServices from "@/services/transactionsService";
+import AccountService from "@/services/accounts.service";
 
 class TransactionsController {
   public transactionService = new TransactionServices();
+  public accountService = new AccountService();
 
   public getAllTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -39,44 +42,39 @@ class TransactionsController {
     }
   };
 
-  public withdrawFund = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public withdrawFund = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const accountId = req.params.id;
       const transactionData: UserTransactionsDto = req.body;
-      const withdrawalTxnData: Transaction = await this.transactionService.withdrawMoney(
-        accountId,
-        transactionData.txnPassword,
-        transactionData.amount,
-      );
+      const withdrawalTxnData: Transaction = await this.transactionService.withdrawMoney(req, transactionData.txnPassword, transactionData.amount);
 
       res.status(200).json({ data: withdrawalTxnData, message: "withDrawFundsFromWallet" });
     } catch (error) {
       next(error);
     }
   };
-  public fundAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public fundAccount = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const accountId = req.params.id;
       const transactionData: UserTransactionsDto = req.body;
-      const txnData = await this.transactionService.fundAccount(accountId, transactionData.amount);
+      const txnData = await this.transactionService.fundAccount(req, transactionData.amount);
 
       res.status(200).json({ data: txnData, message: "fundWalletAccount" });
     } catch (error) {
       next(error);
     }
   };
-  public sendMoney = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public sendMoney = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { senderId, receiverId } = req.params;
+      const { receiverId } = req.params;
+      const userId = req.user.id;
       const transactionData: UserTransactionsDto = req.body;
       const txnData: sendMoneyReturnProps = await this.transactionService.sendMoney(
-        senderId,
+        userId,
         transactionData.txnPassword,
         receiverId,
         transactionData.amount,
       );
 
-      res.status(200).json({ data: { ...txnData.debitTxn, ...txnData.creditTxn }, message: "TransferMoneyToWalletUser" });
+      res.status(200).json({ data: [txnData.debitTxn, txnData.creditTxn], message: "TransferMoneyToWalletUser" });
     } catch (error) {
       next(error);
     }
