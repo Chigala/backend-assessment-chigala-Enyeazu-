@@ -1,6 +1,5 @@
 import request from "supertest";
 import App from "@/app";
-import { CreateUserDto } from "@dtos/users.dto";
 import AuthRoute from "@/routes/auth.route";
 
 afterAll(async () => {
@@ -9,45 +8,53 @@ afterAll(async () => {
 
 describe("Testing Auth", () => {
   describe("[POST] /signup", () => {
-    it("response should have the Create userData", () => {
-      const userData: CreateUserDto = {
-        email: "test@email.com",
-        password: "q1w2e3r4",
-        name: "chigala",
-      };
-
-      const authRoute = new AuthRoute();
-      const app = new App([authRoute]);
-      return request(app.getServer()).post("/signup").send(userData).expect(201);
-    });
-
-    it("check if the user already exists ", () => {
+    it("response should have the Create userData", done => {
       const userData = {
-        email: "test@gmail.com",
-        password: "chigala",
-        name: "chigala",
-      };
-      const authRoute = new AuthRoute();
-      const app = new App([authRoute]);
-      return request(app.getServer()).post("/signup").send(userData).expect(409);
-    });
-  });
-
-  describe("[POST] /login", () => {
-    it("response should have the Set-Cookie header with the Authorization token", async () => {
-      const userData = {
-        email: "test@email.com",
-        password: "q1w2e3r4",
+        email: "chigalatheboss@gmail.com",
+        password: "chigala2000",
+        name: "chigalaman",
       };
 
       const authRoute = new AuthRoute();
       const app = new App([authRoute]);
-      return request(app.getServer())
-        .post("/login")
+      request(app.getServer())
+        .post("/signup")
         .send(userData)
-        .expect("Set-Cookie", /^Authorization=.+/);
+        .set("Accept", "application/json")
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(response => {
+          console.log(response);
+        })
+        .expect(201, done);
     });
+
+    // it("check if the user already exists ", () => {
+    //   const userData = {
+    //     email: "test@gmail.com",
+    //     password: "chigala",
+    //     name: "chigala",
+    //   };
+    //   const authRoute = new AuthRoute();
+    //   const app = new App([authRoute]);
+    //   return request(app.getServer()).post("/signup").expect("Content-Type", /json/).send(userData).expect(409);
+    // });
   });
+
+  // describe("[POST] /login", () => {
+  //   it("response should have the Set-Cookie header with the Authorization token", async () => {
+  //     const userData = {
+  //       email: "test@email.com",
+  //       password: "q1w2e3r4",
+  //     };
+
+  //     const authRoute = new AuthRoute();
+  //     const app = new App([authRoute]);
+  //     return request(app.getServer())
+  //       .post("/login")
+  //       .send(userData)
+  //       .expect("Set-Cookie", /^Authorization=.+/);
+  //   });
+  // });
 
   // error: StatusCode : 404, Message : Authentication token missing
   // describe('[POST] /logout', () => {

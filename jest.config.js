@@ -9,4 +9,12 @@ module.exports = {
     "^.+\\.tsx?$": "ts-jest",
   },
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/src" }),
+  // clearMocks: true,
+  // moduleFileExtensions: ["ts"],
+  // setupFilesAfterEnv: ["jest-extended"],
+  // globals: {
+  //   "ts-jest": {
+  //     diagnostics: false,
+  //   },
+  // },
 };
