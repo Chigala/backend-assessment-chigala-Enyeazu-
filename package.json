@@ -1,6 +1,9 @@
 {
   "name": "assessment-project",
   "version": "0.0.0",
+   "engines": {
+    "node": "16.13.1"
+  }, 
   "description": "TypeScript + Knex + MySQL + Express API Server",
   "author": "",
   "license": "ISC",
