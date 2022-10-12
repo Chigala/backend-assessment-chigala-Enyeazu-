@@ -12,6 +12,7 @@ class UsersController {
 
       res.status(200).json({ data: findAllUsersData, message: "findAll" });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   };
