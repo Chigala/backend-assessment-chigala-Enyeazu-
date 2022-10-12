@@ -22,6 +22,10 @@ npm start
 ```
   Navigate to `http://localhost:3000`
 
+- database model diagram
+
+![Database table](/images/db-model.png)
+
 - API Document endpoints
 
    Endpoints :
