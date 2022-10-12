@@ -24,12 +24,12 @@ npm start
 
 - API Document endpoints
 
-  swagger Spec Endpoint : http://localhost:8001/api-docs 
+   Endpoint : [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19993901-16a25a43-5793-4b4e-beda-6406fbb567d5?action=collection%2Ffork&collection-url=entityId%3D19993901-16a25a43-5793-4b4e-beda-6406fbb567d5%26entityType%3Dcollection%26workspaceId%3Dc5852bd6-248a-440e-bdec-17ec29d890ee) 
 
-  swagger-ui  Endpoint : http://localhost:8001/docs 
+ 
 
 
-# TypeScript + Node + exoress + knex
+# TypeScript + Node + express + knex + mysql
 The main purpose of this repository is to show a project setup and workflow for writing microservice. The Rest APIs will be using the Swagger (OpenAPI) Specification.
 
 
