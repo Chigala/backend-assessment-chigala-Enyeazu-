@@ -24,12 +24,15 @@ npm start
 
 - API Document endpoints
 
-  swagger Spec Endpoint : http://localhost:8001/api-docs 
+   Endpoints :
+   
+   
+   [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19993901-16a25a43-5793-4b4e-beda-6406fbb567d5?action=collection%2Ffork&collection-url=entityId%3D19993901-16a25a43-5793-4b4e-beda-6406fbb567d5%26entityType%3Dcollection%26workspaceId%3Dc5852bd6-248a-440e-bdec-17ec29d890ee) 
 
-  swagger-ui  Endpoint : http://localhost:8001/docs 
+ 
 
 
-# TypeScript + Node + exoress + knex
+# TypeScript + Node + express + knex + mysql
 The main purpose of this repository is to show a project setup and workflow for writing microservice. The Rest APIs will be using the Swagger (OpenAPI) Specification.
 
 
@@ -49,13 +52,24 @@ The folder structure of this app is explained below:
 | **dist**                 | Contains the distributable (or output) from your TypeScript build.  |
 | **node_modules**         | Contains all  npm dependencies                                                            |
 | **src**                  | Contains  source code that will be compiled to the dist dir                               |
-| **configuration**        | Application configuration including environment-specific configs 
+| **config**               | Application configuration including environment-specific configs 
 | **src/controllers**      | Controllers define functions to serve various express routes. 
+| **src/databases**        | database migration, seeds and configs
+| **src/dtos**             | class validators 
+| **src/exceptions**       |  Error handling files. 
+| **src/Interfaces**       | interface files for typescript 
 | **src/middlewares**      | Express middlewares which process the incoming requests before handling them down to the routes
 | **src/routes**           | Contain all express routes, separated by module/area of application                       
 | **src/models**           | Models define schemas that will be used in storing and retrieving data from Application database  |
-| **src**/index.ts         | Entry point to express app                                                               |
-| package.json             | Contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)   | tsconfig.json            | Config settings for compiling source code only written in TypeScript    
+| **src/services**          | functions for the individual routes  |
+| **src/tests**           | test files for unit testing  |
+| **src/utils**           | shareable functions   |
+| **/server.ts**        | Entry point to express app                                                               |
+| **/app.ts**             | contain express routers, database connections etc   
+| package.json             | Contains npm dependencies as well as [build scripts](#what-if-a-library-isnt-on-definitelytyped)   | tsconfig.json            | Config 
+
+
+settings for compiling source code only written in TypeScript    
 | tslint.json              | Config settings for TSLint code style checking                                                |
 
 ## Building the project
@@ -111,12 +125,20 @@ Npm scripts basically allow us to call (and chain) terminal commands via npm.
 | Npm Script | Description |
 | ------------------------- | ------------------------------------------------------------------------------------------------- |
 | `start`                   | Runs full build and runs node on dist/server.js. Can be invoked with `npm start`                  |
-| `build:copy`                   | copy the *.yaml file to dist/ folder      |
-| `build:live`                   | Full build. Runs ALL build tasks       |
-| `build:dev`                   | Full build. Runs ALL build tasks with all watch tasks        |
+| `build`                   | copy the *.yaml file to dist/ folder      |
+| `build:tsc`               | Full build. Runs ALL build tasks       |
+| `build:dev`               | Full build. Runs ALL build tasks with all watch tasks        |
 | `dev`                   | Runs full build before starting all watch tasks. Can be invoked with `npm dev`                                         |
-| `test`                    | Runs build and run tests using mocha        |
+| `test`                    | Runs build and run tests using supertest        |
 | `lint`                    | Runs TSLint on project files       |
+|`seed`                     | seeds the database                 |
+|`migrate`                  | run database migration             |
+| `make:seeder`             | make a seeder file                 |
+| `make:migration`           | make a migration file             |
+| `deploy:production`        | production deployment             |
+| `deploy:dev`               | development deployment             |
+
+
 
 ### Using the debugger in VS Code
 Node.js debugging in VS Code is easy to setup and even easier to use. 
@@ -167,169 +189,37 @@ Press `F5` in VS Code, it looks for a top level `.vscode` folder with a `launch.
 The tests are  written in Mocha and the assertions done using Chai
 
 ```
-"mocha": "3.4.2",
-"chai": "4.1.2",
-"chai-http": "3.0.0",
+ "jest": "^28.1.1",
+ "supertest": "^6.2.4",
+  "ts-jest": "^28.0.7",
 ```
 
-### Example application.spec.ts
+### Example index.test.ts
 ```
-import chaiHttp = require("chai-http")
-import * as chai from "chai"
-import app from './application'
-const expect = chai.expect;
-chai.use(chaiHttp);
-describe('App', () => {
-  it('works', (done:Function): void => {
-  chai.request(app)
-      .get('/api/hello?greeting=world')
-      .send({})
-      .end((err:Error, res: any): void => {
-          
-          expect(res.statusCode).to.be.equal(200);
-          expect(res.body.msg).to.be.equal("hello world");
-          done();
-      });
-  
-    });
+import request from "supertest";
+import App from "@/app";
+import IndexRoute from "@routes/index.route";
+
+afterAll(async () => {
+  await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
 });
+
+describe("Testing Index", () => {
+  describe("[GET] /", () => {
+    it("response statusCode 200", () => {
+      const indexRoute = new IndexRoute();
+      const app = new App([indexRoute]);
+      return request(app.getServer()).get(`${indexRoute.path}`).expect(200);
+    });
+  });
+});
+
 ```
 ### Running tests using NPM Scripts
 ````
 npm run test
 ````
 Test files are created under test folder.
-
-
-# Swagger
-## Specification
-The swagger specification file is named as swagger.yaml. The file is located under definition folder.
-Example:
-```
-paths:
-  /hello:
-    get:
-      x-swagger-router-controller: helloWorldRoute
-      operationId: helloWorldGet
-      tags:
-        - /hello
-      description: >-
-        Returns the current weather for the requested location using the
-        requested unit.
-      parameters:
-        - name: greeting
-          in: query
-          description: Name of greeting
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Successful request.
-          schema:
-            $ref: '#/definitions/Hello'
-        default:
-          description: Invalid request.
-          schema:
-            $ref: '#/definitions/Error'
-definitions:
-  Hello:
-    properties:
-      msg:
-        type: string
-    required:
-      - msg
-  Error:
-    properties:
-      message:
-        type: string
-    required:
-      - message
-```
-### Highlights of the swagger.yaml File
-
-- /hello:
-  
-  Specifies how users should be routed when they make a request to this endpoint.
-- x-swagger-router-controller: helloWorldRoute
-
-  Specifies  which code file acts as the controller for this endpoint.
-- get:
-
-  Specifies the method being requested (GET, PUT, POST, etc.).
-- operationId: hello
-  
-  Specifies the direct method to invoke for this endpoint within the controller/router 
-- parameters:
-  
-   This section defines the parameters of your endpoint. They can be defined as path, query, header, formData, or body.
-- definitions:
-   
-   This section defines the structure of objects used in responses or as parameters.
-## Swagger Middleware
-The project is using npm module `swagger-tools` that provides middleware functions for metadata, security, validation and routing, and bundles Swagger UI into Express.
-```
-swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
-        // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
-        app.use(middleware.swaggerMetadata());
-        // Validate Swagger requests
-        app.use(middleware.swaggerValidator({}));
-        // Route validated requests to appropriate controller
-        app.use(middleware.swaggerRouter(options));
-       
-        // Serve the Swagger documents and Swagger UI
-        app.use(middleware.swaggerUi());
-        cb();
-    })
-```
-- Metadata
-
-  Swagger extends the Express request object, so that each route handler has access to incoming parameters that have been parsed based on the spec, as well as additional Swagger-generated information from the client.
-
-  Any incoming parameters for the API call will be available in `req.swagger` regardless of whether they were transmitted using query, body, header, etc.
-
-- Validator
-
-  Validation middleware will only route requests that match paths in Swagger specification exactly in terms of endpoint path, request mime type, required and optional parameters, and their declared types.
-
-- Swagger Router
-
-  The Swagger Router connects the Express route handlers found in the controller files on the path specified, with the paths defined in the Swagger specification (swagger.yaml). The routing looks up the correct controller file and exported function based on parameters added to the Swagger spec for each path.
-
-  Here is an example for a hello world endpoint:
-
-  ```
-  paths:
-  /hello:
-      get:
-      x-swagger-router-controller: helloWorldRoute
-      operationId: helloWorldGet
-      tags:
-        - /hello
-      description: >-
-        Returns the current weather for the requested location using the
-        requested unit.
-      parameters:
-        - name: greeting
-          in: query
-          description: Name of greeting
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Successful request.
-          schema:
-            $ref: '#/definitions/Hello'
-        default:
-          description: Invalid request.
-          schema:
-            $ref: '#/definitions/Error'
-  ```
-The fields `x-swagger-router-controller` will point the middleware to a `helloWorldRoute.ts` file in the route's directory, while the `operationId` names the handler function to be invoked.
-
-- Swagger UI
-
-  The final piece of middleware enables serving of the swagger-ui interface direct from the Express server. It also serves the raw Swagger schema (.json) that clients can consume. Paths for both are configurable.
-  The swagger-ui endpoint is acessible at /docs endpoint.
 
 # TSLint
 TSLint is a code linter that helps catch minor code quality and style issues.
