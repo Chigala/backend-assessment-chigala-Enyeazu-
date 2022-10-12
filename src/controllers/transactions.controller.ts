@@ -22,7 +22,7 @@ class TransactionsController {
 
   public getAllTransactionByAccountId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const accountId = req.params.id;
+      const accountId = req.params.accountId;
       const getAllTransactionData: Transaction[] = await this.transactionService.getAllTransactionsByAccountId(accountId);
 
       res.status(200).json({ data: getAllTransactionData, message: "findAllTransactionsBelongingToAParticularId" });
