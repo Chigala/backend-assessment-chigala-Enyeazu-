@@ -128,12 +128,14 @@ class TransactionServices {
   }
 
   public async getTransactionById(transactionId: string): Promise<Transaction> {
+    if (isEmpty(transactionId)) throw new HttpException(400, "Transaction id cannot be empty");
     const transaction: Transaction = await Transactions.query().where("id", transactionId).first();
     if (isEmpty(transaction)) throw new HttpException(404, "Transaction not found");
     return transaction;
   }
 
   public async getAllTransactionsByAccountId(accountId: string): Promise<Transaction[]> {
+    if (isEmpty(accountId)) throw new HttpException(400, "Account id cannot be empty");
     const transactions = await Transactions.query().where("account_id", accountId);
     if (isEmpty(transactions)) throw new HttpException(404, "Transactions not found");
     return transactions;
